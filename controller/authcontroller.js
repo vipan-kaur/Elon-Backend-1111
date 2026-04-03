@@ -11,8 +11,8 @@ const transport = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: "vipkaur12@@gmail.com",
-    pass: "xrln rdvp bjlw mpfq"
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 
 })
@@ -95,7 +95,7 @@ const login = async (req, res) => {
     await user.save()
 
     const mailoption = {
-      from: "vihnikaur@gmail.com",
+      from: process.env.EMAIL_USER,
       to: user.email,
       subject: " OTP Verification",
       text: `Hello ${user.name}, Your OTP is: ${otp}`
