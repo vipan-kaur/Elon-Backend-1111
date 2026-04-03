@@ -11,7 +11,9 @@ const options={
             {
                 url:"http://localhost:3000"
             },
-            {url:"https://elon-backend-m5wx.onrender.com"}
+            {
+                url:"https://elon-backend-1111.onrender.com"
+            }
         ]   
     },
     apis:["./route/*.js"]
