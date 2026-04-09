@@ -1,25 +1,28 @@
-const express = require("express")
+import express from "express"
 const router = express.Router()
 
-const {
+import {
   createProduct,
   updateProduct,
   deleteProduct,
   getProductsByCategory,
   getallProducts,
   getProductById
-} = require("../controller/productcontroller")
+} from "../controller/productcontroller.js"
 
-const { uploads } = require("../multer/multer")
+import adminMiddleware from "../middleware/adminMiddleware.js"
+import upload from "../multer/multer.js"
 
 
 /**
  * @swagger
  * /api/createProduct:
  *   post:
- *     summary: Create a new product
- *     description: Create a new product with image upload (1–3 images)
+ *     summary: Create a new product (Admin only)
+ *     description: Create a new product with image upload (1–3 images). Admin authentication required.
  *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -54,17 +57,22 @@ const { uploads } = require("../multer/multer")
  *         description: Product created successfully
  *       400:
  *         description: Product with this title already exists
+ *       401:
+ *         description: Unauthorized - No token provided
+ *       403:
+ *         description: Forbidden - Admin role required
  */
-router.post("/createProduct",uploads.array('image',3), createProduct)
-
+router.post("/createProduct", adminMiddleware, upload.single('image'), createProduct)
 
 
 /**
  * @swagger
  * /api/updateProduct/{id}:
  *   put:
- *     summary: Update product
+ *     summary: Update product (Admin only)
  *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -93,10 +101,14 @@ router.post("/createProduct",uploads.array('image',3), createProduct)
  *     responses:
  *       200:
  *         description: Product updated successfully
+ *       401:
+ *         description: Unauthorized - No token provided
+ *       403:
+ *         description: Forbidden - Admin role required
  *       404:
  *         description: Product not found
  */
-router.put("/updateProduct/:id", updateProduct)
+router.put("/updateProduct/:id", adminMiddleware, updateProduct)
 
 
 
@@ -104,8 +116,10 @@ router.put("/updateProduct/:id", updateProduct)
  * @swagger
  * /api/deleteProduct/{id}:
  *   delete:
- *     summary: Delete product
+ *     summary: Delete product (Admin only)
  *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -116,10 +130,14 @@ router.put("/updateProduct/:id", updateProduct)
  *     responses:
  *       200:
  *         description: Product deleted successfully
+ *       401:
+ *         description: Unauthorized - No token provided
+ *       403:
+ *         description: Forbidden - Admin role required
  *       404:
  *         description: Product not found
  */
-router.delete("/deleteProduct/:id", deleteProduct)
+router.delete("/deleteProduct/:id", adminMiddleware, deleteProduct)
 
 
 
@@ -186,4 +204,4 @@ router.get("/products/:category", getProductsByCategory)
  */
 router.get("/getById/:id", getProductById)
 
-module.exports = router
+export default router

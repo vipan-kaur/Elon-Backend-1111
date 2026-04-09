@@ -1,21 +1,34 @@
-const User = require("../model/usermodel")
-const bcrypt = require("bcrypt")
-const nodemailer = require("nodemailer")
-const jwt = require("jsonwebtoken")
+import User from "../model/usermodel.js";
+import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
+
 const generateOtp = () => {
   return Math.floor(Math.random() * 9000) + 1000
 }
 
-const transport = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+// Create transport with validated credentials
+const createTransport = () => {
+  const emailUser = process.env.EMAIL_USER?.trim();
+  const emailPass = process.env.EMAIL_PASS?.trim();
+
+  if (!emailUser || !emailPass) {
+    console.warn("⚠️ Missing email credentials. OTP will not be sent.");
+    return null;
   }
 
-})
+  return nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: emailUser,
+      pass: emailPass
+    }
+  });
+};
+
+let transport = createTransport();
 
 // const signup=async(req,res)=>{
 
@@ -60,6 +73,7 @@ const signup = async (req, res) => {
       name,
       email,
       password: hashPassword,
+        role:"user",
     });
 
     await newUser.save();
@@ -94,20 +108,29 @@ const login = async (req, res) => {
     user.otp = otp
     await user.save()
 
-    const mailoption = {
-      from: process.env.EMAIL_USER,
-      to: user.email,
-      subject: " OTP Verification",
-      text: `Hello ${user.name}, Your OTP is: ${otp}`
-
+    // Try to send OTP email if transport is available
+    if (transport) {
+      try {
+        const mailoption = {
+          from: process.env.EMAIL_USER?.trim(),
+          to: user.email,
+          subject: "OTP Verification",
+          text: `Hello ${user.name}, Your OTP is: ${otp}`
+        }
+        await transport.sendMail(mailoption);
+        res.status(200).json({ message: "OTP sent to your email" })
+      } catch (mailError) {
+        console.error("📧 Email send error:", mailError.message);
+        return res.status(500).json({ message: "Failed to send OTP email. Please check server logs." })
+      }
+    } else {
+      // If no transport, return OTP in response for testing
+      console.warn("⚠️ Email not configured. OTP for testing:", otp);
+      res.status(200).json({ message: "OTP generated (email service unavailable)", otp: otp })
     }
-    await transport.sendMail(mailoption);
 
-    res.status(200).json(
-      { message: "Otp sent" }
-
-    )
   } catch (error) {
+    console.error("❌ Login error:", error.message);
     res.status(500).json({ message: error.message })
   }
 }
@@ -236,4 +259,4 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, verify, getUserbyId, logout, updateUser };
+export { signup, login, verify, getUserbyId, logout, updateUser };

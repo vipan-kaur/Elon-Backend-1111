@@ -1,4 +1,5 @@
-const mongoose=require("mongoose")
+import mongoose from "mongoose"
+
 const womenSchema=new mongoose.Schema({
    title:{
     type: String,
@@ -15,7 +16,7 @@ const womenSchema=new mongoose.Schema({
   category:{
     type: String,
     required: true,
-    enum:[women]
+    enum:["women"]
   },
   images:[String],
  rating:{
@@ -24,4 +25,4 @@ const womenSchema=new mongoose.Schema({
   
 })
 
-module.exports=mongoose.model("Womenproduct",womenSchema)
+export default mongoose.model("Womenproduct",womenSchema)

@@ -1,7 +1,7 @@
-const express=require("express")
+import express from "express"
 const router=express.Router()
-const{ signup,login,verify,getUserbyId,logout, updateUser}=require("../controller/authcontroller")
-const { uploads } = require("../multer/multer")
+import { signup,login,verify,getUserbyId,logout, updateUser} from "../controller/authcontroller.js"
+import upload from "../multer/multer.js"
 
 /**
  * @swagger
@@ -123,6 +123,6 @@ router.post("/logout", logout)
  *       200: { description: Profile updated successfully }
  *       404: { description: User not found }
  */
-router.put("/update-profile/:id", uploads.single("profilePic"), updateUser)
+router.put("/update-profile/:id", upload.single("profilePic"), updateUser)
 
-module.exports=router
+export default router

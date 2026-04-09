@@ -1,11 +1,13 @@
-require("dotenv").config()
-const express = require('express')
-const mongoose =require("mongoose")
-const router=require("./route/route")
-const authroute=require("./route/authroutes")
-const cors=require("cors")
-const swaggerexpress=require("swagger-ui-express")
-const swaggerdocs=require("./swagger")
+import dotenv from "dotenv"
+import express from "express"
+import mongoose from "mongoose"
+import router from "./route/route.js"
+import authroute from "./route/authroutes.js"
+import cors from "cors"
+import swaggerexpress from "swagger-ui-express"
+import swaggerdocs from "./swagger.js"
+
+dotenv.config()
 const app = express()
 const port = process.env.PORT || 3000
 

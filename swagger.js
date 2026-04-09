@@ -1,4 +1,5 @@
-const swaggerJsdoc=require("swagger-jsdoc")
+import swaggerJsdoc from "swagger-jsdoc"
+
 const options={
     definition:{
         openapi:"3.0.0",
@@ -14,10 +15,20 @@ const options={
             {
                 url:"https://elon-backend-1111.onrender.com"
             }
-        ]   
+        ],
+        components:{
+            securitySchemes:{
+                BearerAuth:{
+                    type:"http",
+                    scheme:"bearer",
+                    bearerFormat:"JWT",
+                    description:"Enter JWT token"
+                }
+            }
+        }
     },
     apis:["./route/*.js"]
 }
  
 const swaggerdocs=swaggerJsdoc(options)
-module.exports=swaggerdocs
+export default swaggerdocs
